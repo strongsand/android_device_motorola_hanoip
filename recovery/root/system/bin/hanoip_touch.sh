@@ -1,73 +1,50 @@
 #!/system/bin/sh
 
-module_path=/sbin/modules
-firmware_path=/sbin/firmware
-touch_class_path=/sys/class/touchscreen
+touch_class=/sys/class/touchscreen/ilitek
+upgrade=/proc/ilitek/fw_upgrade
 
-if [ ! -d "$module_path" ]; then
-    if [ -d "/vendor/lib/modules" ]; then
-        module_path=/vendor/lib/modules
-    fi
-fi
-
-if [ ! -d "$firmware_path" ]; then
-    if [ -d "/vendor/firmware" ]; then
-        firmware_path=/vendor/firmware
-    fi
-fi
-
-wait_for_poweron()
-{
-	local wait_nomore=10
-	local count=0
-	while true; do
-		readiness=$(cat $touch_path/poweron 2>/dev/null)
-		if [ "$readiness" = "1" ]; then
-			break
-		fi
-		count=$((count+1))
-		[ $count -eq $wait_nomore ] && break
-		sleep 1
-	done
-	if [ $count -eq $wait_nomore ]; then
-		return 1
-	fi
-	return 0
-}
-
-# Load touchscreen and hardware modules
-insmod $module_path/exfat.ko 2>/dev/null
-insmod $module_path/ilitek_v3_mmi.ko 2>/dev/null
-insmod $module_path/mmi_info.ko 2>/dev/null
-insmod $module_path/moto_f_usbnet.ko 2>/dev/null
-insmod $module_path/qpnp_adaptive_charge.ko 2>/dev/null
-insmod $module_path/sx933x_sar.ko 2>/dev/null
-insmod $module_path/fpc1020_mmi.ko 2>/dev/null
-insmod $module_path/mmi_annotate.ko 2>/dev/null
-insmod $module_path/mmi_sys_temp.ko 2>/dev/null
-insmod $module_path/mpq-adapter.ko 2>/dev/null
-insmod $module_path/sensors_class.ko 2>/dev/null
-insmod $module_path/utags.ko 2>/dev/null
-
-if [ -d "$firmware_path" ]; then
-    cd $firmware_path
-fi
-
-if [ -d "$touch_class_path" ]; then
-    touch_product_string=$(ls $touch_class_path 2>/dev/null | head -n 1)
-    if [ -n "$touch_product_string" ] && [ -f "$touch_class_path/$touch_product_string/path" ]; then
-        firmware_file="FW_ILITEK_TDDI_TM.bin"
-        touch_path=/sys$(cat $touch_class_path/$touch_product_string/path | awk '{print $1}')
-        if [ -d "$touch_path" ]; then
-            wait_for_poweron
-            if [ -f "$firmware_path/$firmware_file" ]; then
-                echo $firmware_file > $touch_path/doreflash 2>/dev/null
-                echo 1 > $touch_path/forcereflash 2>/dev/null
-                sleep 5
-                echo 1 > $touch_path/reset 2>/dev/null
-            fi
+case "$#" in
+    0)
+        if [ -r "$touch_class/vendor" ]; then
+            printf '%s\n' 'Ilitek built-in driver detected.'
+        else
+            printf '%s\n' 'Ilitek probe not observed at boot.'
         fi
-    fi
+        exit 0
+        ;;
+    1)
+        if [ "$1" = "--reflash" ]; then
+            :
+        else
+            printf '%s\n' 'Usage: hanoip_touch.sh [--reflash]' >&2
+            exit 2
+        fi
+        ;;
+    *)
+        printf '%s\n' 'Usage: hanoip_touch.sh [--reflash]' >&2
+        exit 2
+        ;;
+esac
+
+if [ "$(uname -r)" != 4.14.357-openela-WabiSabi ] ||
+   [ "$(cat "$touch_class/vendor" 2>/dev/null)" != ilitek ] ||
+   [ ! -r "$upgrade" ]; then
+    printf '%s\n' 'WabiSabi Ilitek firmware interface unavailable.' >&2
+    exit 1
 fi
 
-exit 0
+panel=$(sed -n 's/^Product ID: //p' "$touch_class/ic_ver" 2>/dev/null)
+if [ "$panel" != TM ] || [ ! -s /vendor/firmware/FW_ILITEK_TDDI_TM.bin ]; then
+    printf '%s\n' 'Ilitek TM panel or packaged firmware could not be confirmed.' >&2
+    exit 1
+fi
+
+# Reading this proc entry initiates the update. The driver selects its firmware.
+# The reply begins with two binary status bytes, followed by a text result.
+if result=$(tr -d '\000' < "$upgrade"); then
+    case "$result" in
+        'Upgrade firmware = PASS'*) printf '%s\n' 'Ilitek firmware update reported success.'; exit 0 ;;
+    esac
+fi
+printf '%s\n' 'Ilitek firmware update did not report success. Check kernel logs.' >&2
+exit 1
