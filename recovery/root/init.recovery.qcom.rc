@@ -32,7 +32,6 @@ on init
 
 on boot
     start runatboot
-    start health-hal-2-1
     start vendor.health-recovery
 
 on fs
@@ -43,9 +42,8 @@ on fs
     symlink /vendor/dsp /dsp
     export LD_LIBRARY_PATH /system/lib64:/sbin:/vendor/lib64:/vendor/lib64/hw
     setprop ro.board.platform sm6150
-
-on post-fs
     start boot-hal-1-2
+    start health-hal-2-1
 
 on post-fs && property:init.svc.boot-hal-1-2=stopped
     start boot-hal-1-1
