@@ -53,4 +53,5 @@ if [ "$1" = "$FDEVICE" ] || [ "$FOX_BUILD_DEVICE" = "$FDEVICE" ]; then
     export FOX_ENABLE_APP_MANAGER=1
     export OF_MAINTAINER="strongsand"
     export FOX_MAINTAINER_PATCH_VERSION=1
+    export OF_USE_LZMA_COMPRESSION=1
 fi

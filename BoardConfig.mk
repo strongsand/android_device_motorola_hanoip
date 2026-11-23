@@ -233,8 +233,9 @@ endif
 # VINTF
 PRODUCT_ENFORCE_VINTF_MANIFEST := true
 
-# RAMDISK
-BOARD_RAMDISK_USE_LZ4 := true
+# RAMDISK — WabiSabi kernel has CONFIG_RD_LZMA=y; LZMA keeps OrangeFox ramdisk
+# well under Motorola ABL's ~32 MiB fastboot boot ramdisk ceiling (LZ4 was 35.08 MiB).
+OF_USE_LZMA_COMPRESSION := 1
 
 # OrangeFox fox_12.1 configuration (replaces TWRP Y/H offsets to avoid double-shifting)
 FOX_AB_DEVICE := 1
