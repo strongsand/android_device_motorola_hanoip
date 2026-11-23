@@ -54,6 +54,17 @@ on property:ro.crypto.type=file
     setprop ro.crypto.state encrypted
     setprop twrp.apex.loaded true
 
+service boot-hal-1-2 /system/bin/android.hardware.boot@1.2-service
+    override
+    interface android.hardware.boot@1.0::IBootControl default
+    interface android.hardware.boot@1.1::IBootControl default
+    interface android.hardware.boot@1.2::IBootControl default
+    user root
+    group root
+    setenv LD_LIBRARY_PATH /system/lib64:/system/lib:/vendor/lib64:/vendor/lib:/sbin
+    disabled
+    seclabel u:r:recovery:s0
+
 service runatboot /system/bin/runatboot.sh
     oneshot
     user root
