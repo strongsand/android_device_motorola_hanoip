@@ -30,7 +30,7 @@
 # OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-# Mount table synchronized with VoltageOS first_stage_ramdisk/fstab.qcom.
+# Mount table synchronized with VoltageOS v5 first_stage_ramdisk/fstab.qcom.
 # Android fstab file.
 # The filesystem that contains the filesystem checker binary (typically /system) cannot
 # specify MF_CHECK, and must come before any filesystems that do specify MF_CHECK
@@ -57,4 +57,4 @@ product                                                 /product                
 # The update_engine code looks for this entry in order to determine the boot device address
 # and fails if it does not find it.
 /dev/block/bootdevice/by-name/misc                      /misc                    emmc    defaults                                             defaults
-/dev/block/zram0                                        none                     swap    defaults                                             zramsize=60%
+/dev/block/zram0                                        none                     swap    defaults                                             zramsize=80%
