@@ -201,16 +201,12 @@ TW_FORCE_KEYMASTER_VER := true
 # Extras
 TW_EXCLUDE_TWRPAPP := true
 
-# Languages
-TW_EXTRA_LANGUAGES := true
+# Languages (disable CJK extra fonts to keep LZ4 ramdisk under Motorola ABL ~32 MiB limit)
+TW_EXTRA_LANGUAGES := false
 
 # TWRP Debug Flags
 TARGET_USES_LOGD := true
 TWRP_INCLUDE_LOGCAT := true
-TARGET_RECOVERY_DEVICE_MODULES += debuggerd
-RECOVERY_BINARY_SOURCE_FILES += $(TARGET_OUT_EXECUTABLES)/debuggerd
-TARGET_RECOVERY_DEVICE_MODULES += strace
-RECOVERY_BINARY_SOURCE_FILES += $(TARGET_OUT_EXECUTABLES)/strace
 
 #
 # For local builds only
@@ -233,11 +229,12 @@ endif
 # VINTF
 PRODUCT_ENFORCE_VINTF_MANIFEST := true
 
-# RAMDISK — WabiSabi kernel has CONFIG_RD_LZMA=y; LZMA keeps OrangeFox ramdisk
-# well under Motorola ABL's ~32 MiB fastboot boot ramdisk ceiling (LZ4 was 35.08 MiB).
-OF_USE_LZMA_COMPRESSION := 1
+# RAMDISK — MUST stay LZ4 to match vendor_boot.img's LZ4 first_stage_ramdisk in Header v3
+# (mixing vendor_boot LZ4 + boot LZMA triggers kernel initramfs "chunk length is longer than allocated").
+BOARD_RAMDISK_USE_LZ4 := true
+OF_USE_LZ4_COMPRESSION := 1
 
-# OrangeFox fox_12.1 configuration (replaces TWRP Y/H offsets to avoid double-shifting)
+# OrangeFox fox_12.1 configuration (slimmed to keep LZ4 ramdisk <= 31 MiB for Motorola ABL)
 FOX_AB_DEVICE := 1
 FOX_VIRTUAL_AB_DEVICE := 1
 FOX_TARGET_DEVICES := hanoip
@@ -259,12 +256,6 @@ OF_DONT_PATCH_ENCRYPTED_DEVICE := 1
 OF_KEEP_DM_VERITY := 1
 OF_SKIP_MULTIUSER_FOLDERS_BACKUP := 1
 OF_QUICK_BACKUP_LIST := /boot;/data;
-FOX_USE_BASH_SHELL := 1
-FOX_ASH_IS_BASH := 1
-FOX_USE_TAR_BINARY := 1
-FOX_USE_SED_BINARY := 1
-FOX_USE_XZ_UTILS := 1
-FOX_USE_NANO_EDITOR := 1
-FOX_ENABLE_APP_MANAGER := 1
+FOX_DELETE_AROMAFM := 1
 OF_MAINTAINER := strongsand
 FOX_MAINTAINER_PATCH_VERSION := 1
