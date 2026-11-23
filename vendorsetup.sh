@@ -23,9 +23,8 @@ if [ "$1" = "$FDEVICE" ] || [ "$FOX_BUILD_DEVICE" = "$FDEVICE" ]; then
     export LC_ALL="C"
     export ALLOW_MISSING_DEPENDENCIES=true
     export TARGET_DEVICE_ALT="hanoip"
-    export OF_TARGET_DEVICES="hanoip"
+    export FOX_TARGET_DEVICES="hanoip"
     export FOX_AB_DEVICE=1
-    export OF_AB_DEVICE=1
     export FOX_VIRTUAL_AB_DEVICE=1
     export FOX_USE_TWRP_RECOVERY_IMAGE_BUILDER=1
     export FOX_RECOVERY_SYSTEM_PARTITION="/dev/block/mapper/system"
@@ -53,5 +52,5 @@ if [ "$1" = "$FDEVICE" ] || [ "$FOX_BUILD_DEVICE" = "$FDEVICE" ]; then
     export FOX_USE_NANO_EDITOR=1
     export FOX_ENABLE_APP_MANAGER=1
     export OF_MAINTAINER="strongsand"
-    export FOX_VERSION="R11.1_hanoip_A17"
+    export FOX_MAINTAINER_PATCH_VERSION=1
 fi

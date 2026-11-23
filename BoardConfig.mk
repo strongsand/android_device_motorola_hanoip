@@ -238,8 +238,8 @@ BOARD_RAMDISK_USE_LZ4 := true
 
 # OrangeFox fox_12.1 configuration (replaces TWRP Y/H offsets to avoid double-shifting)
 FOX_AB_DEVICE := 1
-OF_AB_DEVICE := 1
 FOX_VIRTUAL_AB_DEVICE := 1
+FOX_TARGET_DEVICES := "hanoip"
 FOX_USE_TWRP_RECOVERY_IMAGE_BUILDER := 1
 FOX_RECOVERY_SYSTEM_PARTITION := "/dev/block/mapper/system"
 FOX_RECOVERY_VENDOR_PARTITION := "/dev/block/mapper/vendor"
@@ -266,4 +266,4 @@ FOX_USE_XZ_UTILS := 1
 FOX_USE_NANO_EDITOR := 1
 FOX_ENABLE_APP_MANAGER := 1
 OF_MAINTAINER := "strongsand"
-FOX_VERSION := "R11.1_hanoip_A17"
+FOX_MAINTAINER_PATCH_VERSION := 1
