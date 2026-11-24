@@ -47,6 +47,6 @@ if [ "$1" = "$FDEVICE" ] || [ "$FOX_BUILD_DEVICE" = "$FDEVICE" ]; then
     export OF_QUICK_BACKUP_LIST="/boot;/data;"
     export FOX_DELETE_AROMAFM=1
     export OF_USE_LZ4_COMPRESSION=1
-    export OF_MAINTAINER="strongsand"
+    export OF_MAINTAINER="Hurricane"
     export FOX_MAINTAINER_PATCH_VERSION=1
 fi
